@@ -1,6 +1,6 @@
 "use server";
 
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import Contact from "@/models/Contact";
 
 
