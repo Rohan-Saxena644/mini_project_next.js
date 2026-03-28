@@ -1,8 +1,10 @@
 import React from 'react'
-import {getContacts} from '@/actions'
+import {getContacts , updateContact} from '@/actions'
 import {Badge} from './ui/badge'
 import { Mail } from 'lucide-react';
 import {Card,CardContent,CardHeader} from '@/components/ui/card';
+import { Button } from '@base-ui/react';
+
 
 const ContactLists = async () => {
 
@@ -34,9 +36,11 @@ const ContactLists = async () => {
                                     <div className="flex-1">
                                         <h3 className="text-lg font-semibold">{contact.name}</h3>
                                         <p className="text-sm text-muted-foreground">{contact.email}</p>
+                                        {console.log(contact.status)}
                                     </div>
                                     <Badge variant="outline">
-                                        {new Date(contact.createdAt).toLocaleDateString()}
+                                        {/* {new Date(contact.createdAt).toLocaleDateString()} */}
+                                        {contact.status}
                                     </Badge>
                                 </div>
                             </CardHeader>
@@ -46,6 +50,28 @@ const ContactLists = async () => {
                                     {contact.message}
                                 </div>
                             </CardContent>
+
+                            <div className="flex gap-2 ml-4">
+                                {contact.status === "new"  && (
+                                    <form action={async ()=>{
+                                        "use server"
+                                        await updateContact(contact._id,"read")
+                                    }}
+                                    >
+                                        <Button variant="outline" size="sm" type="submit" className="border rounded p-2 border-blue-500 hover:bg-blue-700">Mark As Read</Button>
+                                    </form>
+                                )}
+
+                                {contact.status === "read"  && (
+                                    <form action={async ()=>{
+                                        "use server"
+                                        await updateContact(contact._id,"replied")
+                                    }}
+                                    >
+                                        <Button variant="outline" size="sm" type="submit" className="border rounded p-2 border-blue-500 hover:bg-blue-700">Mark As Replied</Button>
+                                    </form>
+                                )}
+                            </div>
                         </Card>
                     ))
                 }

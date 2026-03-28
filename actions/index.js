@@ -2,6 +2,7 @@
 
 import dbConnect from "@/lib/db";
 import Contact from "@/models/Contact";
+import { revalidatePath } from "next/cache";
 
 
 export async function createContact(formData) {
@@ -20,9 +21,10 @@ export async function createContact(formData) {
              name: name.trim(), 
              email: email.trim().toLowerCase(), 
              message: message.trim(), 
+             status: "new",
         });
 
-        await contact.save();
+        //await contact.save();
 
         return {
             success: true,
@@ -53,5 +55,19 @@ export async function getContacts(){
     }catch(error){
         console.error("Error fetching contacts",error);
         return [];
+    }
+}
+
+
+export async function updateContact(contactId,status){
+    try{
+        await dbConnect();
+        await Contact.findByIdAndUpdate(contactId,{status});
+        revalidatePath("/contacts")
+        return {success:true}
+
+    }catch(error){
+        console.error("Error updating contact status:",error)
+        return {success: false , error: "Failed to update Status"}
     }
 }
