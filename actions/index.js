@@ -2,7 +2,7 @@
 
 import dbConnect from "@/lib/db";
 import Contact from "@/models/Contact";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 
 export async function createContact(formData) {
@@ -25,6 +25,8 @@ export async function createContact(formData) {
         });
 
         //await contact.save();
+
+        revalidateTag("contact-stats")
 
         return {
             success: true,
@@ -63,11 +65,32 @@ export async function updateContact(contactId,status){
     try{
         await dbConnect();
         await Contact.findByIdAndUpdate(contactId,{status});
-        revalidatePath("/contacts")
+        // revalidatePath("/contacts")
+        revalidateTag("contact-stats")
         return {success:true}
 
     }catch(error){
         console.error("Error updating contact status:",error)
         return {success: false , error: "Failed to update Status"}
     }
+}
+
+
+export async function getContactStats(){
+    const getCachedStats = unstable_cache(
+        async()=>{
+            await dbConnect();
+            const total = await Contact.countDocuments()
+            const newCount = await Contact.countDocuments({status: "new"})
+            const readCount = await Contact.countDocuments({status: "read"})
+            const repliedCount = await Contact.countDocuments({status: "replied"})
+
+            return {total,newCount,readCount,repliedCount}
+        },
+        ["contact-stats"],
+        {tags:["contact-stats"]}
+
+    )
+
+    return getCachedStats()
 }

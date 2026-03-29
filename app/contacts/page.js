@@ -2,6 +2,7 @@ import { Button } from '@base-ui/react'
 import  Link  from 'next/link'
 import ContactLists from '@/components/contact-list'
 import React from 'react'
+import ContactStats from '../../components/contact-stats'
 
 const Contact = () => {
   return (
@@ -23,6 +24,7 @@ const Contact = () => {
             <ContactLists/>
           </div>
         
+          <ContactStats/>
 
         </div>
     </main>
